@@ -12,6 +12,7 @@ export interface Model {
   name: string;
   family: string;
   size: string;
+  fileSize: string;
   contextWindow: string;
   format: string;
   license: string;
@@ -54,7 +55,7 @@ export function ModelCard({ model, isActive, onActivate, onDownload, downloadSta
       <CardContent className="space-y-3">
         <div className="text-sm text-muted-foreground space-y-2">
             <p><strong>Family:</strong> {model.family}</p>
-            <p><strong>Size:</strong> ~{model.size} params</p>
+            <p><strong>Size:</strong> {model.fileSize} (~{model.size} params)</p>
             <p><strong>Context:</strong> {model.contextWindow} tokens</p>
             <p><strong>Format:</strong> <Badge variant="outline">{model.format}</Badge></p>
             <p><strong>License:</strong> {model.license}</p>
