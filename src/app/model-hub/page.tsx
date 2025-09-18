@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import { ModelCard } from "@/components/model-hub/model-card";
 import type { Model } from "@/components/model-hub/model-card";
 import { useDownloader } from "@/hooks/use-downloader";
+import { Button } from "@/components/ui/button";
 
 const models: Model[] = [
   {
@@ -52,6 +55,8 @@ const models: Model[] = [
   },
 ];
 
+const huggingFaceUrl = "https://huggingface.co/models?library=gguf&sort=trending&search=tinyllm";
+
 export default function ModelHubPage() {
     const [activeModel, setActiveModel] = useState<string>(models[0].id);
     const { startDownload, getDownloadState } = useDownloader(models.map(m => ({id: m.id, url: m.url, name: m.name})));
@@ -63,7 +68,15 @@ export default function ModelHubPage() {
       </header>
       <main className="flex-1 overflow-auto p-4 md:p-6">
         <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Available Models</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-lg font-semibold">Available Models</h2>
+                <Button asChild variant="outline">
+                    <Link href={huggingFaceUrl} target="_blank">
+                        <ExternalLink className="mr-2" />
+                        Explore More Models
+                    </Link>
+                </Button>
+            </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {models.map(model => (
                     <ModelCard 
