@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useTransition } from "react";
-import { useFormState } from "react-dom";
+import { useState, useRef, useEffect, useTransition, useActionState } from "react";
 import { Paperclip, SendHorizonal, BrainCircuit, Book, ThumbsDown, ThumbsUp } from "lucide-react";
 
 import type { ChatMessage } from "@/lib/types";
@@ -27,7 +26,7 @@ export function ChatInterface() {
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const [state, formAction] = useFormState(getAiResponse, null);
+  const [state, formAction] = useActionState(getAiResponse, null);
 
   useEffect(() => {
     if (state?.error) {
