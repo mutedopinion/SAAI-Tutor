@@ -7,6 +7,18 @@ import type { ChatMessage } from "@/lib/types";
 
 const fullAnswerKeywords = ["full answer", "explain", "i want answers", "i don’t know", "show solution"];
 
+function getSocraticHint(topic: string, attempt: number): string {
+    const baseHints = [
+        `What are your initial thoughts on "${topic}"?`,
+        `How would you break down the topic "${topic}" into smaller pieces?`,
+        `Is there a specific part of "${topic}" that you're stuck on?`,
+        `Can you relate "${topic}" to something you already know?`,
+        `What if you tried to explain "${topic}" to a friend? What would you say first?`
+    ];
+    return baseHints[attempt % baseHints.length] || baseHints[0];
+}
+
+
 export async function getAiResponse(
   prevState: any,
   formData: FormData
@@ -46,15 +58,11 @@ export async function getAiResponse(
             wikiData: result,
         }
     } else if (isNewTopic || socraticAttempts < 3 && !wantsFullAnswer) {
-      const hints = [
-        "What do you already know about this? Which part feels tricky?",
-        "Let's try focusing on the core idea. What happens if you look at it from another angle?",
-        "Let's break it into steps. Can you outline the first step?",
-      ];
+      const hint = getSocraticHint(userInput, socraticAttempts);
       response = {
         id: `assistant-${Date.now()}`,
         role: "assistant",
-        content: hints[socraticAttempts] || hints[2],
+        content: hint,
         socraticAttempt: socraticAttempts + 1,
       };
     } else {

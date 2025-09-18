@@ -47,10 +47,10 @@ export const useDownloader = (items: DownloaderItem[]) => {
                     clearInterval(interval);
                     return { ...prev, [id]: { ...prev[id], status: 'completed' } };
                 }
-                const newProgress = Math.min(currentProgress + 10, 100);
+                const newProgress = Math.min(currentProgress + 1, 100);
                 return { ...prev, [id]: { ...prev[id], progress: newProgress } };
             });
-        }, 500);
+        }, 1000); // Slower progress for more realism
     };
 
     const pauseDownload = (id: string) => {
