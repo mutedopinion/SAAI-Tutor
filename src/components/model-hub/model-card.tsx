@@ -54,11 +54,11 @@ export function ModelCard({ model, isActive, onActivate, onDownload, downloadSta
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="text-sm text-muted-foreground space-y-2">
-            <p><strong>Family:</strong> {model.family}</p>
-            <p><strong>Size:</strong> {model.fileSize} (~{model.size} params)</p>
-            <p><strong>Context:</strong> {model.contextWindow} tokens</p>
-            <p><strong>Format:</strong> <Badge variant="outline">{model.format}</Badge></p>
-            <p><strong>License:</strong> {model.license}</p>
+            <div><strong>Family:</strong> {model.family}</div>
+            <div><strong>Size:</strong> {model.fileSize} (~{model.size} params)</div>
+            <div><strong>Context:</strong> {model.contextWindow} tokens</div>
+            <div className="flex items-center gap-2"><strong>Format:</strong> <Badge variant="outline">{model.format}</Badge></div>
+            <div><strong>License:</strong> {model.license}</div>
         </div>
         {downloadState.status === 'downloading' && (
             <div className="space-y-1">
