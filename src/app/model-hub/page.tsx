@@ -55,7 +55,7 @@ const models: Model[] = [
   },
 ];
 
-const huggingFaceUrl = "https://huggingface.co/models?library=gguf&sort=trending&search=tinyllm";
+const huggingFaceUrl = "https://huggingface.co/models?library=gguf&sort=trending";
 
 export default function ModelHubPage() {
     const [activeModel, setActiveModel] = useState<string>(models[0].id);
