@@ -11,6 +11,8 @@ import { MessageList } from "@/components/chat/message-list";
 import { getAiResponse } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const initialSocraticState = {
   attempts: 0,
@@ -25,6 +27,7 @@ export function ChatInterface() {
 
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const [state, formAction] = useActionState(getAiResponse, null);
 
@@ -77,6 +80,17 @@ export function ChatInterface() {
     });
     
     formRef.current?.reset();
+    if (textAreaRef.current) {
+      textAreaRef.current.value = "";
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && textAreaRef.current) {
+      textAreaRef.current.value = `File attached: ${file.name}`;
+      textAreaRef.current.focus();
+    }
   };
 
   const showSocraticUnlock = socraticState.attempts >= 3;
@@ -113,6 +127,7 @@ export function ChatInterface() {
           className="flex items-start gap-4"
         >
           <Textarea
+            ref={textAreaRef}
             name="message"
             placeholder="Ask SAAI anything... or start with 'New topic: ' to reset."
             rows={1}
@@ -125,9 +140,20 @@ export function ChatInterface() {
             }}
             disabled={isPending}
           />
-          <Button type="button" variant="outline" size="icon" disabled={isPending}>
-            <Paperclip className="w-5 h-5" />
-          </Button>
+          <Input 
+            type="file" 
+            id="file-upload" 
+            className="hidden" 
+            onChange={handleFileChange}
+            disabled={isPending}
+          />
+          <Label htmlFor="file-upload" asChild>
+            <Button asChild type="button" variant="outline" size="icon" disabled={isPending}>
+              <span className="cursor-pointer">
+                <Paperclip className="w-5 h-5" />
+              </span>
+            </Button>
+          </Label>
           <Button type="submit" size="icon" disabled={isPending}>
             <SendHorizonal className="w-5 h-5" />
           </Button>
