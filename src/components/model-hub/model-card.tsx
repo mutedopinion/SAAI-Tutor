@@ -3,7 +3,9 @@
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Download } from "lucide-react";
+import { CheckCircle, Download, Loader2, Pause, Play } from "lucide-react";
+import type { DownloadState } from "@/hooks/use-downloader";
+import { Progress } from "@/components/ui/progress";
 
 export interface Model {
   id: string;
@@ -13,15 +15,34 @@ export interface Model {
   contextWindow: string;
   format: string;
   license: string;
+  url: string;
 }
 
 interface ModelCardProps {
   model: Model;
   isActive: boolean;
   onActivate: () => void;
+  onDownload: () => void;
+  downloadState: DownloadState;
 }
 
-export function ModelCard({ model, isActive, onActivate }: ModelCardProps) {
+export function ModelCard({ model, isActive, onActivate, onDownload, downloadState }: ModelCardProps) {
+
+  const renderDownloadButton = () => {
+    switch (downloadState.status) {
+      case 'idle':
+        return <Button onClick={onDownload} className="w-full"><Download className="mr-2" /> Download</Button>;
+      case 'downloading':
+        return <Button variant="outline" className="w-full"><Loader2 className="mr-2 animate-spin" /> Downloading</Button>;
+      case 'paused':
+        return <Button onClick={onDownload} className="w-full"><Play className="mr-2" /> Resume</Button>;
+      case 'completed':
+        return <Button onClick={onActivate} disabled={isActive} className="w-full">{isActive ? <><CheckCircle className="mr-2" /> Activated</> : 'Activate'}</Button>;
+      default:
+        return null;
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -38,19 +59,15 @@ export function ModelCard({ model, isActive, onActivate }: ModelCardProps) {
             <p><strong>Format:</strong> <Badge variant="outline">{model.format}</Badge></p>
             <p><strong>License:</strong> {model.license}</p>
         </div>
+        {downloadState.status === 'downloading' && (
+            <div className="space-y-1">
+                <Progress value={downloadState.progress} className="h-2" />
+                <p className="text-xs text-muted-foreground text-center">{downloadState.progress}%</p>
+            </div>
+        )}
       </CardContent>
       <CardFooter>
-        <Button onClick={onActivate} disabled={isActive} className="w-full">
-            {isActive ? (
-                <>
-                    <CheckCircle className="mr-2" /> Activated
-                </>
-            ) : (
-                <>
-                    <Download className="mr-2" /> Download & Activate
-                </>
-            )}
-        </Button>
+        {renderDownloadButton()}
       </CardFooter>
     </Card>
   );

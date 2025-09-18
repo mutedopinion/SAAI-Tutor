@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ModelCard } from "@/components/model-hub/model-card";
 import type { Model } from "@/components/model-hub/model-card";
+import { useDownloader } from "@/hooks/use-downloader";
 
 const models: Model[] = [
   {
@@ -13,6 +14,7 @@ const models: Model[] = [
     contextWindow: "32k",
     format: "GGUF",
     license: "Tongyi Qianwen LICENSE",
+    url: "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0_5b-instruct-q4_k_m.gguf"
   },
   {
     id: 'google/gemma-2b-it-gguf',
@@ -22,6 +24,7 @@ const models: Model[] = [
     contextWindow: "8k",
     format: "GGUF",
     license: "Gemma Terms of Use",
+    url: "https://huggingface.co/google/gemma-2b-it-gguf/resolve/main/gemma-2b-it.gguf"
   },
   {
     id: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0-GGUF',
@@ -31,6 +34,7 @@ const models: Model[] = [
     contextWindow: "2k",
     format: "GGUF",
     license: "Apache 2.0",
+    url: "https://huggingface.co/TinyLlama/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q2_K.gguf"
   },
   {
     id: 'microsoft/Phi-3-mini-4k-instruct-gguf',
@@ -40,11 +44,13 @@ const models: Model[] = [
     contextWindow: "4k",
     format: "GGUF",
     license: "MIT",
+    url: "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf"
   },
 ];
 
 export default function ModelHubPage() {
     const [activeModel, setActiveModel] = useState<string>(models[0].id);
+    const { startDownload, getDownloadState } = useDownloader(models.map(m => ({id: m.id, url: m.url, name: m.name})));
 
   return (
     <div className="flex flex-col h-full">
@@ -61,6 +67,8 @@ export default function ModelHubPage() {
                         model={model}
                         isActive={activeModel === model.id}
                         onActivate={() => setActiveModel(model.id)}
+                        onDownload={() => startDownload(model.id)}
+                        downloadState={getDownloadState(model.id)}
                     />
                 ))}
             </div>
