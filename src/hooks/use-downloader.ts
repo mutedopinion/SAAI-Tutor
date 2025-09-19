@@ -83,9 +83,8 @@ export const useDownloader = (items: DownloaderItem[]) => {
                     ...prev,
                     [id]: { ...prev[id], status: 'completed', progress: 100 }
                 }));
-                 // In a real scenario, you would save the downloaded file here.
-                 // For now we'll just mark it as complete.
-                 modelDB.addModel(id, new Blob(['mock-data-for-'+id]));
+                 // Save a mock blob to IndexedDB to simulate file storage.
+                 modelDB.addModel(id, new Blob([`mock-data-for-${id}`]));
             }
         }
         
