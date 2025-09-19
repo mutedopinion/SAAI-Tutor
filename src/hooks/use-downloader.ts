@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { modelDB } from '@/lib/db';
 
 export interface DownloaderItem {
     id: string;
@@ -25,6 +26,24 @@ export const useDownloader = (items: DownloaderItem[]) => {
     });
 
     const [isDownloading, setIsDownloading] = useState(false);
+
+    useEffect(() => {
+        const checkExistingDownloads = async () => {
+            await modelDB.init();
+            const downloadedIds = await modelDB.getDownloadedModelIds();
+            setDownloads(prev => {
+                const newState = { ...prev };
+                downloadedIds.forEach(id => {
+                    if (newState[id]) {
+                        newState[id] = { progress: 100, status: 'completed' };
+                    }
+                });
+                return newState;
+            });
+        };
+        checkExistingDownloads();
+    }, []);
+
 
     useEffect(() => {
         setIsDownloading(Object.values(downloads).some(d => d.status === 'downloading'));
@@ -64,6 +83,9 @@ export const useDownloader = (items: DownloaderItem[]) => {
                     ...prev,
                     [id]: { ...prev[id], status: 'completed', progress: 100 }
                 }));
+                 // In a real scenario, you would save the downloaded file here.
+                 // For now we'll just mark it as complete.
+                 modelDB.addModel(id, new Blob(['mock-data-for-'+id]));
             }
         }
         
