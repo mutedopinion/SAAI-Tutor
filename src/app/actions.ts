@@ -8,14 +8,27 @@ import type { ChatMessage } from "@/lib/types";
 const fullAnswerKeywords = ["full answer", "explain", "i want answers", "i don’t know", "show solution"];
 
 function getSocraticHint(topic: string, attempt: number): string {
+    // More dynamic hint generation
+    const cleanTopic = topic.replace(/^(new topic:|what is|facts about|draw|diagram|sketch|mindmap)\s*/i, '').trim();
+
     const baseHints = [
-        `What are your initial thoughts on "${topic}"?`,
-        `How would you break down the topic "${topic}" into smaller pieces?`,
-        `Is there a specific part of "${topic}" that you're stuck on?`,
-        `Can you relate "${topic}" to something you already know?`,
-        `What if you tried to explain "${topic}" to a friend? What would you say first?`
+        `What are your initial thoughts on "${cleanTopic}"?`,
+        `How would you break down the topic "${cleanTopic}" into smaller pieces?`,
+        `Is there a specific part of "${cleanTopic}" that you're stuck on?`,
+        `Can you relate "${cleanTopic}" to something you already know?`,
+        `What if you tried to explain "${cleanTopic}" to a friend? What would you say first?`
     ];
-    return baseHints[attempt % baseHints.length] || baseHints[0];
+
+    const advancedHints = [
+        `Let's dig deeper into "${cleanTopic}". What are its core components?`,
+        `Can you think of a real-world example related to "${cleanTopic}"?`,
+        `What are the potential challenges or controversies surrounding "${cleanTopic}"?`
+    ];
+    
+    if (attempt < baseHints.length) {
+        return baseHints[attempt];
+    }
+    return advancedHints[(attempt - baseHints.length) % advancedHints.length];
 }
 
 
