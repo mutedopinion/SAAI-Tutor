@@ -39,26 +39,45 @@ export const useDownloader = (items: DownloaderItem[]) => {
             [id]: { ...prev[id], status: 'downloading', progress: 0, error: undefined }
         }));
 
-        // Simulate download progress
-        const interval = setInterval(() => {
+        // Simulate download progress with variable speed
+        const simulateProgress = (currentProgress: number) => {
+            if (downloads[id].status === 'paused') return;
+
+            const increment = Math.random() * 5 + 1; // Variable increment
+            const newProgress = Math.min(currentProgress + increment, 100);
+
             setDownloads(prev => {
-                const currentProgress = prev[id].progress;
-                if (currentProgress >= 100) {
-                    clearInterval(interval);
-                    return { ...prev, [id]: { ...prev[id], status: 'completed' } };
+                 if (prev[id].status !== 'downloading') {
+                    // Stop simulation if status changed
+                    return prev;
                 }
-                const newProgress = Math.min(currentProgress + 1, 100);
-                return { ...prev, [id]: { ...prev[id], progress: newProgress } };
+                return {
+                    ...prev,
+                    [id]: { ...prev[id], progress: Math.round(newProgress) }
+                }
             });
-        }, 1000); // Slower progress for more realism
+
+            if (newProgress < 100) {
+                setTimeout(() => simulateProgress(newProgress), Math.random() * 1000 + 200);
+            } else {
+                 setDownloads(prev => ({
+                    ...prev,
+                    [id]: { ...prev[id], status: 'completed', progress: 100 }
+                }));
+            }
+        }
+        
+        simulateProgress(0);
     };
 
     const pauseDownload = (id: string) => {
         // Pausing logic would go here
+         setDownloads(prev => ({ ...prev, [id]: { ...prev[id], status: 'paused' } }));
     };
 
     const resumeDownload = (id: string) => {
         // Resuming logic would go here
+        startDownload(id);
     };
 
     const getDownloadState = (id: string) => {
