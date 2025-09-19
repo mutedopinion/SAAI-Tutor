@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useTransition, useActionState } from "react";
-import { Paperclip, SendHorizonal, BrainCircuit, Book, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Paperclip, SendHorizonal, BrainCircuit, Book } from "lucide-react";
 
 import type { ChatMessage } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -22,14 +22,13 @@ const initialSocraticState = {
 export function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [socraticState, setSocraticState] = useState(initialSocraticState);
-  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [state, formAction] = useActionState(getAiResponse, null);
+  const [state, formAction, isPending] = useActionState(getAiResponse, null);
 
   useEffect(() => {
     if (state?.error) {
@@ -74,10 +73,8 @@ export function ChatInterface() {
 
     formData.set("socraticAttempts", String(socraticState.attempts));
     
-    startTransition(() => {
-      formAction(formData);
-      setSocraticState(prev => ({...prev, attempts: prev.attempts + 1}));
-    });
+    formAction(formData);
+    setSocraticState(prev => ({...prev, attempts: prev.attempts + 1}));
     
     formRef.current?.reset();
     if (textAreaRef.current) {
@@ -146,14 +143,13 @@ export function ChatInterface() {
             className="hidden" 
             onChange={handleFileChange}
             disabled={isPending}
+            accept="image/*,application/pdf,.txt"
           />
-          <Label htmlFor="file-upload" asChild>
-            <Button asChild type="button" variant="outline" size="icon" disabled={isPending}>
-              <span className="cursor-pointer">
-                <Paperclip className="w-5 h-5" />
-              </span>
-            </Button>
-          </Label>
+          <Button type="button" variant="outline" size="icon" disabled={isPending} asChild>
+            <Label htmlFor="file-upload" className="cursor-pointer">
+              <Paperclip className="w-5 h-5" />
+            </Label>
+          </Button>
           <Button type="submit" size="icon" disabled={isPending}>
             <SendHorizonal className="w-5 h-5" />
           </Button>
