@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useTransition, useActionState } from "react";
-import { Paperclip, SendHorizonal, BrainCircuit, Book } from "lucide-react";
+import { useState, useRef, useEffect, useActionState } from "react";
+import { Paperclip, SendHorizonal, BrainCircuit, Book, X } from "lucide-react";
+import Image from "next/image";
 
 import type { ChatMessage } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -22,11 +23,14 @@ const initialSocraticState = {
 export function ChatInterface() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [socraticState, setSocraticState] = useState(initialSocraticState);
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const formRef = useRef<HTMLFormElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [state, formAction, isPending] = useActionState(getAiResponse, null);
 
@@ -55,12 +59,17 @@ export function ChatInterface() {
 
   const handleFormSubmit = async (formData: FormData) => {
     const userInput = formData.get("message") as string;
-    if (!userInput.trim()) return;
+    if (!userInput.trim() && !attachedFile) return;
+
+    let content = userInput;
+    if (attachedFile) {
+        content = `File attached: ${attachedFile.name}\n${userInput}`;
+    }
 
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: "user",
-      content: userInput,
+      content: content,
     };
     
     setMessages((prev) => [...prev, userMessage]);
@@ -80,15 +89,34 @@ export function ChatInterface() {
     if (textAreaRef.current) {
       textAreaRef.current.value = "";
     }
+    setAttachedFile(null);
+    setFilePreview(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && textAreaRef.current) {
-      textAreaRef.current.value = `File attached: ${file.name}`;
-      textAreaRef.current.focus();
+    if (file) {
+      setAttachedFile(file);
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFilePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setFilePreview(null);
+      }
+      textAreaRef.current?.focus();
     }
   };
+  
+  const clearAttachment = () => {
+    setAttachedFile(null);
+    setFilePreview(null);
+    if(fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  }
 
   const showSocraticUnlock = socraticState.attempts >= 3;
 
@@ -123,33 +151,52 @@ export function ChatInterface() {
           action={handleFormSubmit}
           className="flex items-start gap-4"
         >
-          <Textarea
-            ref={textAreaRef}
-            name="message"
-            placeholder="Ask SAAI anything... or start with 'New topic: ' to reset."
-            rows={1}
-            className="flex-1 resize-none"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                formRef.current?.requestSubmit();
-              }
-            }}
-            disabled={isPending}
-          />
-          <Input 
-            type="file" 
-            id="file-upload" 
-            className="hidden" 
-            onChange={handleFileChange}
-            disabled={isPending}
-            accept="image/*,application/pdf,.txt"
-          />
-          <Button type="button" variant="outline" size="icon" disabled={isPending} asChild>
-            <Label htmlFor="file-upload" className="cursor-pointer">
-              <Paperclip className="w-5 h-5" />
+          <div className="relative flex-1">
+            <Textarea
+                ref={textAreaRef}
+                name="message"
+                placeholder="Ask SAAI anything... or start with 'New topic: ' to reset."
+                rows={1}
+                className="flex-1 resize-none pr-12"
+                onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    formRef.current?.requestSubmit();
+                }
+                }}
+                disabled={isPending}
+            />
+             <Input 
+                ref={fileInputRef}
+                type="file" 
+                id="file-upload" 
+                className="hidden" 
+                onChange={handleFileChange}
+                disabled={isPending}
+                accept="image/*,application/pdf,.txt,.md"
+            />
+            <Label htmlFor="file-upload" className="absolute right-2 top-1/2 -translate-y-1/2">
+                <Button type="button" variant="ghost" size="icon" disabled={isPending} className="h-8 w-8">
+                    <Paperclip className="w-5 h-5" />
+                </Button>
             </Label>
-          </Button>
+            {filePreview && (
+                <div className="absolute bottom-full left-0 mb-2 w-24 h-24 rounded-md border overflow-hidden bg-muted">
+                    <Image src={filePreview} alt="File preview" layout="fill" objectFit="cover" />
+                    <Button variant="ghost" size="icon" className="absolute top-0 right-0 h-6 w-6 bg-black/50 hover:bg-black/75" onClick={clearAttachment}>
+                        <X className="w-4 h-4 text-white" />
+                    </Button>
+                </div>
+            )}
+             {attachedFile && !filePreview && (
+                 <div className="absolute bottom-full left-0 mb-2 p-2 rounded-md border bg-muted text-sm">
+                    <span>{attachedFile.name}</span>
+                     <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={clearAttachment}>
+                        <X className="w-4 h-4" />
+                    </Button>
+                 </div>
+             )}
+          </div>
           <Button type="submit" size="icon" disabled={isPending}>
             <SendHorizonal className="w-5 h-5" />
           </Button>

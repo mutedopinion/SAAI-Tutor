@@ -13,6 +13,7 @@ import { Toaster } from '@/components/ui/toaster';
 export const metadata: Metadata = {
   title: 'SAAI Tutor',
   description: 'Your personal AI-powered study assistant.',
+  manifest: '/manifest.json',
 };
 
 const alegreya = Alegreya({
