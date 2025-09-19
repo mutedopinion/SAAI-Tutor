@@ -10,9 +10,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Alegreya', 'serif'],
-        headline: ['Alegreya', 'serif'],
-        code: ['"Source Code Pro"', 'monospace'],
+        body: ['var(--font-alegreya)', 'serif'],
+        headline: ['var(--font-alegreya)', 'serif'],
+        code: ['var(--font-source-code-pro)', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

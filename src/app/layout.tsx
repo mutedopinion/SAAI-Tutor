@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Alegreya, Source_Code_Pro } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -14,27 +15,34 @@ export const metadata: Metadata = {
   description: 'Your personal AI-powered study assistant.',
 };
 
+const alegreya = Alegreya({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-alegreya',
+});
+
+const sourceCodePro = Source_Code_Pro({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-source-code-pro',
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${alegreya.variable} ${sourceCodePro.variable}`}
+    >
       <body
-        className={cn('font-body antialiased', 'dark:bg-background')}
+        className={cn(
+          'font-body antialiased',
+          'dark:bg-background'
+        )}
       >
         <SidebarProvider>
           <AppSidebar />
