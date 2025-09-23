@@ -43,7 +43,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <BookText className="size-6 text-primary" />
+          <Logo className="size-8" />
           <h1
             className={cn(
               "font-bold text-lg text-primary font-headline",
