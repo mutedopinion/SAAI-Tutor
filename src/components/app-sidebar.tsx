@@ -1,11 +1,12 @@
+
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   BookText,
-  BotMessageSquare,
   Cpu,
   FileUp,
   LayoutDashboard,
@@ -42,7 +43,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <BotMessageSquare className="size-6 text-primary" />
+          <Image src="/logo.png" alt="SAAI Logo" width={24} height={24} className="size-6" />
           <h1
             className={cn(
               "font-bold text-lg text-primary font-headline",
