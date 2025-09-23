@@ -3,7 +3,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   BookText,
@@ -25,6 +24,7 @@ import {
   SidebarTrigger,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { Logo } from "@/components/logo";
 
 const mainNav = [
   { href: "/", label: "Chat", icon: MessageSquare },
@@ -43,7 +43,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="SAAI Logo" width={24} height={24} className="size-6" />
+          <Logo className="size-6" />
           <h1
             className={cn(
               "font-bold text-lg text-primary font-headline",
